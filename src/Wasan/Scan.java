@@ -246,10 +246,6 @@ public class Scan {
 		return 0;
 	}
 
-	boolean isNeighbor() {
-		return false;
-	}
-
 	// Module[] defineModule(Point[] pArray, Line[] lArray, Circle[] cArray) {//
 	// 検出した点、線分、円をモジュール化し、要素間の関連性を定義するメソッド
 	// Module[] mArray = new Module[0];
@@ -619,8 +615,8 @@ public class Scan {
 							if (mArray.get(i).relLine.get(j) == mArray.get(k).l) {
 								for (int l = 0; l < mArray.get(k).relPoint.size(); l++) {
 									if (mArray.get(i).p != mArray.get(k).relPoint.get(l)) {
-										//mArray.get(i).relPoint.add(mArray.get(k).relPoint.get(l));
-										Point p=getPoint(pArray,mArray.get(k).relPoint.get(l));
+										// mArray.get(i).relPoint.add(mArray.get(k).relPoint.get(l));
+										Point p = getPoint(pArray, mArray.get(k).relPoint.get(l));
 										mArray.get(i).relPoint.add(p);
 									}
 								}
@@ -656,7 +652,7 @@ public class Scan {
 
 	Point getPoint(ArrayList<Point> pArray, Point p) {
 		for (int i = 0; i < pArray.size(); i++) {
-			if(pArray.get(i)==p){
+			if (pArray.get(i) == p) {
 				return pArray.get(i);
 			}
 		}
@@ -770,8 +766,13 @@ public class Scan {
 		}
 		return false;
 	}
-
+	
 	boolean isNeighbor(Point p, Line l) {// 点が線分上にあるかどうかの判定
+		if (l.start == p || l.end == p) {
+			//return false;
+			//今後は端点の考慮も必要
+		}
+
 		double dotA = (l.start.x - l.end.x) * (l.start.x - p.x) + (l.start.y - l.end.y) * (l.start.y - p.y);
 		double dotB = (l.end.x - l.start.x) * (l.end.x - p.x) + (l.end.y - l.start.y) * (l.end.y - p.y);
 		if (dotA < 0 || dotB < 0) {

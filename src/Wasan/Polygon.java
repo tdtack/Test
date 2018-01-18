@@ -2,11 +2,9 @@ package Wasan;
 
 import java.util.ArrayList;
 
-public class Polygon {
-	// Point p1, p2, p3, p4;
-	Point[] p = new Point[0];
-	Line[] l = new Line[0];// 辺
-	// int leng;
+public class Polygon extends Scan {
+	Point[] p = new Point[0];// 点
+	Line[] l = new Line[0];// 辺(辺の一部である場合は条件を加える)
 
 	// 関係性認識
 	// No.16～20の線分(直線)も判断基準に入れるかどうか
@@ -18,28 +16,60 @@ public class Polygon {
 	Polygon(Point... _p) {// 多角形に対応？
 		Point vp = new Point();
 		for (int i = 0; i < _p.length; i++) {
-			// p[i] = _p[i];
-			p = vp.append(p, _p[i]);// pは頂点
-		} // leng = _p.length;
+			p = vp.append(p, _p[i]); // p[i] = _p[i];・・
+		}
 
 		Line vl = new Line();
-		for (int i = 0; i < _p.length; i++) {
-			// l = vl.append(l, _p[i]);
+		try {
+			// System.out.println(getLine.size());
+		} catch (Exception e) {
+			// System.out.println(e);
 		}
+		/*
+		 * for (int i = 0; i < getLine.size(); i++) { for (int j = 0; j <
+		 * this.p.length; j++) {// 自身の点データ for (int k = 0; k < this.p.length;
+		 * k++) { if (j != k) { if (getLine.get(i).start == p[j] &&
+		 * getLine.get(i).end == p[k]) { l = vl.append(l, getLine.get(i)); }
+		 * else if (isNeighbor(p[k], getLine.get(i))) {// 片方が辺上にある if
+		 * (getLine.get(i).start == p[j] || getLine.get(i).end == p[j]) { l =
+		 * vl.append(l, getLine.get(i)); } } } } } }
+		 */
 	}
 
 	Line[] getLine(ArrayList<Line> list) {
 		Line vl = new Line();
 		for (int i = 0; i < list.size(); i++) {
-			for (int j = 0; j < this.p.length; j++) {
+			for (int j = 0; j < this.p.length; j++) {// 自身の点データ
 				for (int k = 0; k < this.p.length; k++) {
-					if (list.get(i).start == p[j] && list.get(i).end == p[k]) {
-						l = vl.append(l, list.get(i));
+					if (j != k) {
+						if (list.get(i).start == p[j] && list.get(i).end == p[k]) {
+							l = vl.append(l, list.get(i));
+						} else if (isNeighbor(p[k], list.get(i))) {// 片方が辺上にある
+							if (list.get(i).start == p[j] || list.get(i).end == p[j]) {
+								l = vl.append(l, list.get(i));
+							}
+						}
 					}
 				}
 			}
 		}
 		return l;
+	}
+
+	boolean isNeighbor(Point p, Line l) {// 点が線分上にあるかどうかの判定
+		if (l.start == p || l.end == p) {
+			return false;
+		}
+
+		double dotA = (l.start.x - l.end.x) * (l.start.x - p.x) + (l.start.y - l.end.y) * (l.start.y - p.y);
+		double dotB = (l.end.x - l.start.x) * (l.end.x - p.x) + (l.end.y - l.start.y) * (l.end.y - p.y);
+		if (dotA < 0 || dotB < 0) {
+			return false;
+		}
+
+		double dist = Math.abs(l.a * p.x + l.b * p.y + l.c) / Math.sqrt(l.a * l.a + l.b * l.b);
+
+		return dist < 10 ? true : false;
 	}
 
 	Polygon[] append(Polygon[] array, Polygon value) {
@@ -112,13 +142,10 @@ public class Polygon {
 			boolean isPer = isPerpendPair(l[0], l[1], l[2], l[3]);// 偏角の順に並べ直す?
 			if (sameL && isPer) {
 				return "正方形";
-				// return "Squ-Quadrangle";
 			} else if (!sameL && isPer) {
 				return "長方形";
-				// return "Rec-Quadrangle";
 			} else if (sameL && !isPer) {
 				return "菱形";
-				// return "Dia-Quadrangle";
 			}
 
 			Scan s = new Scan();

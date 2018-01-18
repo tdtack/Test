@@ -1,5 +1,7 @@
 package Wasan;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,29 +17,70 @@ public class ImagePro {
 	BufferedImage textImage;// 文字のみを検出した画像
 	// BufferedImage spaceImage;
 
-	//int i = 33;// 画像番号
-	String i = "011";// 画像番号
-
+	// int i = 33;// 画像番号
+	String i = "046";// 画像番号//83,46
+	
 	String[] tag;// 画像に対するタグ→クラス化する？
-	//？TagGroup tagGroup;
-	//画像ごとにHashMapを持つという構想があっても良い？
-	//Stringを持つよりもHashMapを持つ方がいい？
-	//あとでタグを変えたいとかなったらHashMapの方が対応させやすい？
+	// ？TagGroup tagGroup;
+	// 画像ごとにHashMapを持つという構想があっても良い？
+	// Stringを持つよりもHashMapを持つ方がいい？
+	// あとでタグを変えたいとかなったらHashMapの方が対応させやすい？
 
 	ImagePro() {
-		//image = loadImage("dat/input/算額画像" + i + ".png");
-		//image = loadImage("dat/input/算額画像" + i + ".png");
-		image = loadImage("dat/images/"+ i + ".PNG");
-		//image = loadImage("dat/images2/"+ i + ".PNG");
+		// image = loadImage("dat/input/算額画像" + i + ".png");
+		// image = loadImage("dat/input/算額画像" + i + ".png");
+		//image = loadImage("dat/images/" + i + ".PNG");
+		image = loadImage("dat/images2/" + i + ".PNG");
+
+		// ここでリサイズすべき
 		
-		//ここでリサイズすべき
-		//作れ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
+		// 作れ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		image = resizeImage(image);
+
+		System.out.println(image.getWidth() + ", " + image.getHeight());
+
 		proImage = processingImage(true);
 		geomImage = processingImage(false);
 		textImage = processingImage(false);
 
 		tag = new String[0];
+	}
+
+	BufferedImage resizeImage(BufferedImage img) {
+		int width = img.getWidth();
+		int height = img.getHeight();
+
+		int resWidth, resHeight;
+		if (width >= height) {
+			resWidth = 600;
+			resHeight = resWidth * height / width;
+		} else {
+			resHeight = 600;
+			resWidth = resHeight * width / height;
+		}
+
+		BufferedImage resize = new BufferedImage(resWidth, resHeight, img.getType());
+
+		AffineTransform transform = AffineTransform.getScaleInstance((double) resWidth / width,
+				(double) resHeight / height);
+		AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BICUBIC);
+		op.filter(img, resize);
+
+		/*
+		 * xform = new AffineTransformOp(
+		 * AffineTransform.getScaleInstance((double) new_width / width, (double)
+		 * new_height / height), AffineTransformOp.TYPE_BILINEAR); dst = new
+		 * BufferedImage(new_width, new_height, src.getType());
+		 * xform.filter(src, dst);
+		 */
+
+		// . 変換後のバイナリイメージを byte 配列に再格納
+		/*
+		 * ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		 * ImageIO.write(dst, "jpeg", baos); img = baos.toByteArray();
+		 */
+
+		return resize;
 	}
 
 	BufferedImage loadImage(String name) {
@@ -54,7 +97,7 @@ public class ImagePro {
 		BufferedImage output = image;
 
 		output = binarizeImage(output);
-		
+
 		if (type) {
 			output = MorphImage(output);
 			// output = cleanImage(output);
