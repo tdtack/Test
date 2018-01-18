@@ -29,7 +29,7 @@ public class ImagePro {
 	ImagePro() {
 		// image = loadImage("dat/input/算額画像" + i + ".png");
 		// image = loadImage("dat/input/算額画像" + i + ".png");
-		 //image = loadImage("dat/images/" + i + ".PNG");
+		//image = loadImage("dat/images/" + i + ".PNG");
 		image = loadImage("dat/images2/" + i + ".PNG");
 
 		// ここでリサイズすべき
@@ -52,10 +52,10 @@ public class ImagePro {
 
 		int resWidth, resHeight;
 		if (width >= height) {
-			resWidth = 500;
+			resWidth = 600;
 			resHeight = resWidth * height / width;
 		} else {
-			resHeight = 500;
+			resHeight = 600;
 			resWidth = resHeight * width / height;
 		}
 
