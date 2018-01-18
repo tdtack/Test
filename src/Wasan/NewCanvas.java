@@ -59,6 +59,7 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// RelatedTotalが算出
 
 		// ★★★三角形認識
+		//System.out.println(scan.getLine.size());
 		Polygon[] tri = new Polygon[0];
 		ArrayList<Point> vpList = scan.getPoint;
 		for (int i = 0; i < scan.getModule.size(); i++) {
@@ -90,9 +91,9 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 							}
 
 							if (check && !collinear(tri, p[0], p[1], p[2])) {// 論理的な三角形（グラフ理論的には3角形としてよい）
-								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));
+								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));//この時点で辺も決定したい
 								Polygon t = tri[tri.length - 1];
-								t.l = t.getLine(scan.getLine);// ★★
+								t.l = t.getLine(scan.getLine);// ★★構成する辺を取得
 							}
 						}
 					}
@@ -101,10 +102,14 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 				//
 			}
 		}
-		
+
 		for (int i = 0; i < tri.length; i++) {
+			for (int j = 0; j < tri[i].p.length; j++) {
+				System.out.print("P["+tri[i].p[j].getIndex(scan.getPoint)+"], ");
+			}
+			System.out.print("- ");
 			for (int j = 0; j < tri[i].l.length; j++) {
-				System.out.println(tri[i].l[j].getIndex(scan.getLine));
+				System.out.print("L["+tri[i].l[j].getIndex(scan.getLine)+"], ");
 			}
 			System.out.println();
 		}
@@ -168,11 +173,11 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < quad.length; i++) {
-			System.out.println(quad[i].l.length);
+			// System.out.println(quad[i].l.length);
 			for (int j = 0; j < quad[i].l.length; j++) {
-				System.out.println(quad[i].l[j].getIndex(scan.getLine));
+				// System.out.println(quad[i].l[j].getIndex(scan.getLine));
 			}
 		}
 
@@ -426,7 +431,7 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// }
 		// System.out.println();
 
-		//printResult();
+		// printResult();
 
 		// ここで四角形などのタグ付けに関する処理？
 		// scan.tagImage(detectPoint, detectLine, detectCircle);
