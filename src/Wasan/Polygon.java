@@ -174,6 +174,19 @@ public class Polygon extends Scan {
 		return false;
 	}
 
+	boolean tangentGeo(Circle c) {
+		if (this.l.length == 3) {
+			for (int i = 0; i < this.l.length; i++) {
+				if (!isTangent(this.l[i], c)) {
+					return false;
+				}
+			}
+		} else if (this.l.length == 4) {
+
+		}
+		return true;
+	}
+
 	// boolean sameLength(double dist1, double dist2, double dist3) {
 	// double delta = 10;
 	//

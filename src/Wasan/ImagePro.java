@@ -49,13 +49,14 @@ public class ImagePro {
 	BufferedImage resizeImage(BufferedImage img) {
 		int width = img.getWidth();
 		int height = img.getHeight();
-
+		
+		int size=500;
 		int resWidth, resHeight;
 		if (width >= height) {
-			resWidth = 600;
+			resWidth = size;
 			resHeight = resWidth * height / width;
 		} else {
-			resHeight = 600;
+			resHeight = size;
 			resWidth = resHeight * width / height;
 		}
 

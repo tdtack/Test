@@ -9,15 +9,18 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import javax.imageio.ImageIO;
 
 public class NewCanvas extends Canvas implements MouseListener, MouseMotionListener {// implementsの追加
 	ImagePro imgPro;// 画像処理に関する変数
@@ -55,13 +58,11 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 
 		// ★Module定義(degree算出に近い?)
 		// ここで端点などの補正処理を行う?
-		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);//
-		// RelatedTotalが算出
+		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);//RelatedTotalが算出
 
 		// ★★★三角形認識
-		//System.out.println(scan.getLine.size());
 		Polygon[] tri = new Polygon[0];
-		ArrayList<Point> vpList = scan.getPoint;
+		//ArrayList<Point> vpList = scan.getPoint;
 		for (int i = 0; i < scan.getModule.size(); i++) {
 			Module m = scan.getModule.get(i);
 			try {// if (m.p != null)
@@ -91,7 +92,7 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 							}
 
 							if (check && !collinear(tri, p[0], p[1], p[2])) {// 論理的な三角形（グラフ理論的には3角形としてよい）
-								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));//この時点で辺も決定したい
+								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));// この時点で辺も決定したい
 								Polygon t = tri[tri.length - 1];
 								t.l = t.getLine(scan.getLine);// ★★構成する辺を取得
 							}
@@ -103,13 +104,14 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
-		for (int i = 0; i < tri.length; i++) {
+		for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報
+			// tri[i].pとtri[i].lに情報は入っている
 			for (int j = 0; j < tri[i].p.length; j++) {
-				System.out.print("P["+tri[i].p[j].getIndex(scan.getPoint)+"], ");
+				System.out.print("P[" + tri[i].p[j].getIndex(scan.getPoint) + "], ");
 			}
 			System.out.print("- ");
 			for (int j = 0; j < tri[i].l.length; j++) {
-				System.out.print("L["+tri[i].l[j].getIndex(scan.getLine)+"], ");
+				System.out.print("L[" + tri[i].l[j].getIndex(scan.getLine) + "], ");
 			}
 			System.out.println();
 		}
@@ -402,6 +404,23 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			System.out.println("円 × " + detectCircle.size());
 		}
 
+		for (int i = 0; i < tri.length; i++) {//全ての3角形
+			//System.out.println(tri.length);
+			for (int j = 0; j < detectCircle.size(); j++) {//全ての円
+				if (tri[i].tangentGeo(detectCircle.get(j))) {//true
+					System.out.print("円[" + detectCircle.get(i).getIndex(scan.getCircle) + "]は三角形");
+					for (int k = 0; k < tri[i].p.length; k++) {
+						System.out.print("P[" + tri[i].p[k].getIndex(scan.getPoint) + "]");
+					}
+					System.out.print("に接する");
+				}
+				System.out.println();
+			}
+		}
+		// 直線の接し方で出力させるか？
+
+		// ここら辺から要素同士の関連性を出力したい
+
 		// for (int i = 0; i < tri.length; i++) {
 		// if (tri[i].checkTriangle() != "三角形") {
 		// System.out.println(tri[i].checkTriangle() + " : " + "p[" +
@@ -439,14 +458,19 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// System.out.println("OK");
 		// }
 
-		// try {
-		// // ImageIO.write(imgPro.textImage, "png", new File("dat/output/文字画像"
-		// // + imgPro.i + ".png"));
-		// // ImageIO.write(imgPro.geomImage, "png", new File("dat/output/幾何画像"
-		// // + imgPro.i + ".png"));
-		// } catch (Exception e) {
-		// // e.printStackTrace();
-		// }
+		// Robot robot=null;
+		try {
+			// robot=new Robot();
+			// BufferedImage image=robot.createScreenCapture(new
+			// Rectangle(getX(),getY(),getWidth(),getHeight()));
+			// ImageIO.write(imgPro.textImage, "png", new File("dat/output/文字画像"
+			// + imgPro.i + ".png"));
+			ImageIO.write(imgPro.geomImage, "png", new File("dat/output/幾何画像" + imgPro.i + ".png"));
+			// ImageIO.write(image, "png", new File("dat/output/認識結果" + imgPro.i
+			// + ".png"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		try {
 
