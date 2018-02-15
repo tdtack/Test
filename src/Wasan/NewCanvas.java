@@ -9,13 +9,13 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Robot;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -52,136 +52,150 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		scan.scanLine();
 		imgPro.removeLine(scan.getLine);
 
+		// ★★★ここから
+
 		// 点の検出、幾何要素の除去(文字との分類のため)
 		scan.scanPoint();
 		imgPro.removePoint(scan.getPoint);
 
 		// ★Module定義(degree算出に近い?)
 		// ここで端点などの補正処理を行う?
-		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);//RelatedTotalが算出
+		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);// RelatedTotalが算出
 
-		// ★★★三角形認識
-		Polygon[] tri = new Polygon[0];
-		//ArrayList<Point> vpList = scan.getPoint;
-		for (int i = 0; i < scan.getModule.size(); i++) {
-			Module m = scan.getModule.get(i);
-			try {// if (m.p != null)
-				Point[] v = getVertex(m);// mに繋がっている点のモジュールのList
-				for (int j = 0; j < v.length; j++) {
-					for (int k = j + 1; k < v.length; k++) {
-						if (relatePoint(v[j], v[k])) {
-							// int[] num = new int[3];
-							// num[0] = m.p.getIndex(vpList);
-							// num[1] = v[j].getIndex(vpList);
-							// num[2] = v[k].getIndex(vpList);
-							int[] num = { m.p.getIndex(scan.getPoint), v[j].getIndex(scan.getPoint),
-									v[k].getIndex(scan.getPoint) };
-							Arrays.sort(num);// インデックスを昇順に並び替える
+		// System.out.println("size="+scan.getPoint.size());
 
-							Point[] p = new Point[num.length];// num.length=3のはず
-							for (int l = 0; l < p.length; l++) {
-								p[l] = scan.getPoint.get(num[l]);
-							}
+		// ★★★ここまででデータの不具合があると思われる
 
-							// 2個の条件を1つのboolean関数にしても良い？
-							boolean check = true;
-							for (int l = 0; l < tri.length; l++) {
-								if ((tri[l].p[0] == p[0] && (tri[l].p[1] == p[1]) && (tri[l].p[2] == p[2]))) {
-									check = false;
-								}
-							}
-
-							if (check && !collinear(tri, p[0], p[1], p[2])) {// 論理的な三角形（グラフ理論的には3角形としてよい）
-								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));// この時点で辺も決定したい
-								Polygon t = tri[tri.length - 1];
-								t.l = t.getLine(scan.getLine);// ★★構成する辺を取得
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				//
-			}
-		}
-
-		for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報
-			// tri[i].pとtri[i].lに情報は入っている
-			for (int j = 0; j < tri[i].p.length; j++) {
-				System.out.print("P[" + tri[i].p[j].getIndex(scan.getPoint) + "], ");
-			}
-			System.out.print("- ");
-			for (int j = 0; j < tri[i].l.length; j++) {
-				System.out.print("L[" + tri[i].l[j].getIndex(scan.getLine) + "], ");
-			}
-			System.out.println();
-		}
-
-		// System.out.println(tri.length);
-
-		// ★★★四角形認識
-		Polygon[] quad = new Polygon[0];
-		for (int i = 0; i < scan.getModule.size(); i++) {
-			for (int j = i + 1; j < scan.getModule.size(); j++) {// 異なる2点の発見
-				Module m1 = scan.getModule.get(i);
-				Module m2 = scan.getModule.get(j);
-				try {// if (m1.p != null && m2.p != null)
-					Point[] v = sharePoints(getVertex(m1), getVertex(m2));
-					// if (v.length == 2) {// 3以上の場合も//より細かな条件の検討が必要
-					for (int k = 0; k < v.length; k++) {
-						for (int l = k + 1; l < v.length; l++) {
-							int[] asc = { m1.p.getIndex(scan.getPoint), m2.p.getIndex(scan.getPoint),
-									v[k].getIndex(scan.getPoint), v[l].getIndex(scan.getPoint) };
-							int[] rot = { m1.p.getIndex(scan.getPoint), v[k].getIndex(scan.getPoint),
-									m2.p.getIndex(scan.getPoint), v[l].getIndex(scan.getPoint) };
-							Arrays.sort(asc);
-
-							Point[][] p = new Point[2][asc.length];
-							for (int m = 0; m < asc.length; m++) {
-								p[0][m] = scan.getPoint.get(asc[m]);
-								p[1][m] = scan.getPoint.get(rot[m]);
-							}
-
-							boolean check = true;
-							for (int m = 0; m < quad.length; m++) {
-								// quad[m].p[0]自身も並び替えが必要
-								int[] num = { quad[m].p[0].getIndex(scan.getPoint),
-										quad[m].p[1].getIndex(scan.getPoint), quad[m].p[2].getIndex(scan.getPoint),
-										quad[m].p[3].getIndex(scan.getPoint) };
-								Arrays.sort(num);
-
-								boolean test = (scan.getPoint.get(num[0]) == p[0][0]
-										&& (scan.getPoint.get(num[1]) == p[0][1])
-										&& (scan.getPoint.get(num[2]) == p[0][2]))
-										&& (scan.getPoint.get(num[3]) == p[0][3]);
-								// boolean test=((quad[m].p[0] == p[0][0]) &&
-								// (quad[m].p[1] == p[0][1]) && (quad[m].p[2] ==
-								// p[0][2]) && (quad[m].p[3] == p[0][3]));
-								if (test) {
-									check = false;
-								}
-							}
-
-							if (check && !collinear(quad, p[0][0], p[0][1], p[0][2], p[0][3])) {
-								quad = new Polygon().append(quad, new Polygon(p[1][0], p[1][1], p[1][2], p[1][3]));// 順に入ってはいる？
-								Polygon q = quad[quad.length - 1];
-								q.l = q.getLine(scan.getLine);// ★★
-							}
-						}
-					}
-
-					// }
-				} catch (Exception e) {
-					//
-				}
-			}
-		}
-
-		for (int i = 0; i < quad.length; i++) {
-			// System.out.println(quad[i].l.length);
-			for (int j = 0; j < quad[i].l.length; j++) {
-				// System.out.println(quad[i].l[j].getIndex(scan.getLine));
-			}
-		}
+		// // ★★★三角形認識
+		// Polygon[] tri = new Polygon[0];
+		// // ArrayList<Point> vpList = scan.getPoint;
+		// for (int i = 0; i < scan.getModule.size(); i++) {
+		// Module m = scan.getModule.get(i);
+		// try {// if (m.p != null)
+		// Point[] v = getVertex(m);// mに繋がっている点のモジュールのList
+		// for (int j = 0; j < v.length; j++) {
+		// for (int k = j + 1; k < v.length; k++) {
+		// if (relatePoint(v[j], v[k])) {
+		// // int[] num = new int[3];
+		// // num[0] = m.p.getIndex(vpList);
+		// // num[1] = v[j].getIndex(vpList);
+		// // num[2] = v[k].getIndex(vpList);
+		// int[] num = { m.p.getIndex(scan.getPoint),
+		// v[j].getIndex(scan.getPoint),
+		// v[k].getIndex(scan.getPoint) };
+		// Arrays.sort(num);// インデックスを昇順に並び替える
+		//
+		// Point[] p = new Point[num.length];// num.length=3のはず
+		// for (int l = 0; l < p.length; l++) {
+		// p[l] = scan.getPoint.get(num[l]);
+		// }
+		//
+		// // 2個の条件を1つのboolean関数にしても良い？
+		// boolean check = true;
+		// for (int l = 0; l < tri.length; l++) {
+		// if ((tri[l].p[0] == p[0] && (tri[l].p[1] == p[1]) && (tri[l].p[2] ==
+		// p[2]))) {
+		// check = false;
+		// }
+		// }
+		//
+		// if (check && !collinear(tri, p[0], p[1], p[2])) {//
+		// 論理的な三角形（グラフ理論的には3角形としてよい）
+		// tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));//
+		// この時点で辺も決定したい
+		// Polygon t = tri[tri.length - 1];
+		// t.l = t.getLine(scan.getLine);// ★★構成する辺を取得
+		// }
+		// }
+		// }
+		// }
+		// } catch (Exception e) {
+		// //
+		// }
+		// }
+		//
+		// for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報
+		// // tri[i].pとtri[i].lに情報は入っている
+		// for (int j = 0; j < tri[i].p.length; j++) {
+		// System.out.print("P[" + tri[i].p[j].getIndex(scan.getPoint) + "], ");
+		// }
+		// System.out.print("- ");
+		// for (int j = 0; j < tri[i].l.length; j++) {
+		// System.out.print("L[" + tri[i].l[j].getIndex(scan.getLine) + "], ");
+		// }
+		// System.out.println();
+		// }
+		//
+		// // System.out.println(tri.length);
+		//
+		// // ★★★四角形認識
+		// Polygon[] quad = new Polygon[0];
+		// for (int i = 0; i < scan.getModule.size(); i++) {
+		// for (int j = i + 1; j < scan.getModule.size(); j++) {// 異なる2点の発見
+		// Module m1 = scan.getModule.get(i);
+		// Module m2 = scan.getModule.get(j);
+		// try {// if (m1.p != null && m2.p != null)
+		// Point[] v = sharePoints(getVertex(m1), getVertex(m2));
+		// // if (v.length == 2) {// 3以上の場合も//より細かな条件の検討が必要
+		// for (int k = 0; k < v.length; k++) {
+		// for (int l = k + 1; l < v.length; l++) {
+		// int[] asc = { m1.p.getIndex(scan.getPoint),
+		// m2.p.getIndex(scan.getPoint),
+		// v[k].getIndex(scan.getPoint), v[l].getIndex(scan.getPoint) };
+		// int[] rot = { m1.p.getIndex(scan.getPoint),
+		// v[k].getIndex(scan.getPoint),
+		// m2.p.getIndex(scan.getPoint), v[l].getIndex(scan.getPoint) };
+		// Arrays.sort(asc);
+		//
+		// Point[][] p = new Point[2][asc.length];
+		// for (int m = 0; m < asc.length; m++) {
+		// p[0][m] = scan.getPoint.get(asc[m]);
+		// p[1][m] = scan.getPoint.get(rot[m]);
+		// }
+		//
+		// boolean check = true;
+		// for (int m = 0; m < quad.length; m++) {
+		// // quad[m].p[0]自身も並び替えが必要
+		// int[] num = { quad[m].p[0].getIndex(scan.getPoint),
+		// quad[m].p[1].getIndex(scan.getPoint),
+		// quad[m].p[2].getIndex(scan.getPoint),
+		// quad[m].p[3].getIndex(scan.getPoint) };
+		// Arrays.sort(num);
+		//
+		// boolean test = (scan.getPoint.get(num[0]) == p[0][0]
+		// && (scan.getPoint.get(num[1]) == p[0][1])
+		// && (scan.getPoint.get(num[2]) == p[0][2]))
+		// && (scan.getPoint.get(num[3]) == p[0][3]);
+		// // boolean test=((quad[m].p[0] == p[0][0]) &&
+		// // (quad[m].p[1] == p[0][1]) && (quad[m].p[2] ==
+		// // p[0][2]) && (quad[m].p[3] == p[0][3]));
+		// if (test) {
+		// check = false;
+		// }
+		// }
+		//
+		// if (check && !collinear(quad, p[0][0], p[0][1], p[0][2], p[0][3])) {
+		// quad = new Polygon().append(quad, new Polygon(p[1][0], p[1][1],
+		// p[1][2], p[1][3]));// 順に入ってはいる？
+		// Polygon q = quad[quad.length - 1];
+		// q.l = q.getLine(scan.getLine);// ★★
+		// }
+		// }
+		// }
+		//
+		// // }
+		// } catch (Exception e) {
+		// //
+		// }
+		// }
+		// }
+		//
+		// for (int i = 0; i < quad.length; i++) {
+		// // System.out.println(quad[i].l.length);
+		// for (int j = 0; j < quad[i].l.length; j++) {
+		// // System.out.println(quad[i].l[j].getIndex(scan.getLine));
+		// }
+		// }
 
 		// 幾何要素と文字の分類
 		imgPro.removeText();
@@ -208,6 +222,8 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 			detectModule.add(scan.getModule.get(i));// scan.getModule[i]
 		}
+
+		// System.out.println("size="+detectPoint.size());
 
 		// ★★★//任意の1点に対してPoint[]型でreturnしたい
 		// ここで取得できた点同士の関連は「線で繋がっている」ということが重要→Point型での管理がしたい？
@@ -337,6 +353,120 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 
 		// System.out.println();
 
+		// ★★★三角形認識
+		Polygon[] tri = new Polygon[0];
+		// ArrayList<Point> vpList = scan.getPoint;
+		for (int i = 0; i < detectModule.size(); i++) {
+			Module m = detectModule.get(i);
+			try {// if (m.p != null)
+				Point[] v = getVertex(m);// mに繋がっている点のモジュールのList
+				for (int j = 0; j < v.length; j++) {
+					for (int k = j + 1; k < v.length; k++) {
+						if (relatePoint(v[j], v[k])) {
+							int[] num = { m.p.getIndex(detectPoint), v[j].getIndex(detectPoint),
+									v[k].getIndex(detectPoint) };
+							Arrays.sort(num);// インデックスを昇順に並び替える
+
+							Point[] p = new Point[num.length];// num.length=3のはず
+							for (int l = 0; l < p.length; l++) {
+								p[l] = detectPoint.get(num[l]);
+							}
+
+							// 2個の条件を1つのboolean関数にしても良い？
+							boolean check = true;
+							for (int l = 0; l < tri.length; l++) {
+								if ((tri[l].p[0] == p[0] && (tri[l].p[1] == p[1]) && (tri[l].p[2] == p[2]))) {
+									check = false;
+								}
+							}
+
+							if (check && !collinear(tri, p[0], p[1], p[2])) {// 論理的な三角形（グラフ理論的には3角形としてよい）
+								tri = new Polygon().append(tri, new Polygon(p[0], p[1], p[2]));// この時点で辺も決定したい
+								Polygon t = tri[tri.length - 1];
+								t.l = t.getLine(detectLine);// ★★構成する辺を取得
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				//
+			}
+		}
+
+		for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報
+			// tri[i].pとtri[i].lに情報は入っている
+			for (int j = 0; j < tri[i].p.length; j++) {
+				System.out.print("P[" + tri[i].p[j].getIndex(detectPoint) + "], ");
+			}
+			System.out.print("- ");
+			for (int j = 0; j < tri[i].l.length; j++) {
+				System.out.print("L[" + tri[i].l[j].getIndex(detectLine) + "], ");
+			}
+			System.out.println();
+		}
+
+		// ★★★四角形認識
+		Polygon[] quad = new Polygon[0];
+		for (int i = 0; i < detectModule.size(); i++) {
+			for (int j = i + 1; j < detectModule.size(); j++) {// 異なる2点の発見
+				Module m1 = detectModule.get(i);
+				Module m2 = detectModule.get(j);
+				try {// if (m1.p != null && m2.p != null)
+					Point[] v = sharePoints(getVertex(m1), getVertex(m2));
+					// if (v.length == 2) {// 3以上の場合も//より細かな条件の検討が必要
+					for (int k = 0; k < v.length; k++) {
+						for (int l = k + 1; l < v.length; l++) {
+							int[] asc = { m1.p.getIndex(detectPoint), m2.p.getIndex(detectPoint),
+									v[k].getIndex(detectPoint), v[l].getIndex(detectPoint) };
+							int[] rot = { m1.p.getIndex(detectPoint), v[k].getIndex(detectPoint),
+									m2.p.getIndex(detectPoint), v[l].getIndex(detectPoint) };
+							Arrays.sort(asc);
+
+							Point[][] p = new Point[2][asc.length];
+							for (int m = 0; m < asc.length; m++) {
+								p[0][m] = detectPoint.get(asc[m]);
+								p[1][m] = detectPoint.get(rot[m]);
+							}
+
+							boolean check = true;
+							for (int m = 0; m < quad.length; m++) {
+								// quad[m].p[0]自身も並び替えが必要
+								int[] num = { quad[m].p[0].getIndex(detectPoint),
+										quad[m].p[1].getIndex(detectPoint), quad[m].p[2].getIndex(detectPoint),
+										quad[m].p[3].getIndex(detectPoint) };
+								Arrays.sort(num);
+
+								boolean test = (detectPoint.get(num[0]) == p[0][0]
+										&& (detectPoint.get(num[1]) == p[0][1])
+										&& (detectPoint.get(num[2]) == p[0][2]))
+										&& (detectPoint.get(num[3]) == p[0][3]);
+								if (test) {
+									check = false;
+								}
+							}
+
+							if (check && !collinear(quad, p[0][0], p[0][1], p[0][2], p[0][3])) {
+								quad = new Polygon().append(quad, new Polygon(p[1][0], p[1][1], p[1][2], p[1][3]));// 順に入ってはいる？
+								Polygon q = quad[quad.length - 1];
+								q.l = q.getLine(detectLine);// ★★
+							}
+						}
+					}
+
+					// }
+				} catch (Exception e) {
+					//
+				}
+			}
+		}
+
+		for (int i = 0; i < quad.length; i++) {
+			// System.out.println(quad[i].l.length);
+			for (int j = 0; j < quad[i].l.length; j++) {
+				// System.out.println(quad[i].l[j].getIndex(scan.getLine));
+			}
+		}
+
 		if (tri.length > 0) {
 			System.out.println("三角形 × " + tri.length);
 
@@ -404,13 +534,13 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			System.out.println("円 × " + detectCircle.size());
 		}
 
-		for (int i = 0; i < tri.length; i++) {//全ての3角形
-			//System.out.println(tri.length);
-			for (int j = 0; j < detectCircle.size(); j++) {//全ての円
-				if (tri[i].tangentGeo(detectCircle.get(j))) {//true
-					System.out.print("円[" + detectCircle.get(i).getIndex(scan.getCircle) + "]は三角形");
+		for (int i = 0; i < tri.length; i++) {// 全ての3角形
+			// System.out.println(tri.length);
+			for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
+				if (tri[i].tangentGeo(detectCircle.get(j))) {// true
+					System.out.print("円[" + detectCircle.get(j).getIndex(detectCircle) + "]は三角形");
 					for (int k = 0; k < tri[i].p.length; k++) {
-						System.out.print("P[" + tri[i].p[k].getIndex(scan.getPoint) + "]");
+						System.out.print("P[" + tri[i].p[k].getIndex(detectPoint) + "]");
 					}
 					System.out.print("に接する");
 				}
@@ -468,6 +598,34 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			ImageIO.write(imgPro.geomImage, "png", new File("dat/output/幾何画像" + imgPro.i + ".png"));
 			// ImageIO.write(image, "png", new File("dat/output/認識結果" + imgPro.i
 			// + ".png"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			// File file = new File("dat/vector/vector.csv");
+			// FileWriter filewriter = new FileWriter("dat/vector/vector.csv",
+			// false);
+			// PrintWriter p = new PrintWriter(new BufferedWriter(filewriter));
+
+			// ヘッダーを指定する
+			// p.print("社員番号");
+			// p.print(",");
+			// p.print("名前");
+			// p.println();
+
+			// p.close();
+
+			File file = new File("dat/vector/vector.csv");
+			FileWriter filewriter = new FileWriter(file, true);
+			PrintWriter printwriter = new PrintWriter(new BufferedWriter(filewriter));
+
+			printwriter.write("Name");
+			printwriter.write("Num of C");
+			printwriter.write("Num of L");
+
+			printwriter.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -18,7 +18,7 @@ public class ImagePro {
 	// BufferedImage spaceImage;
 
 	// int i = 33;// 画像番号
-	String i = "046";// 画像番号//83,46
+	String i = "090";// 画像番号//83,46
 	
 	String[] tag;// 画像に対するタグ→クラス化する？
 	// ？TagGroup tagGroup;
@@ -31,6 +31,7 @@ public class ImagePro {
 		// image = loadImage("dat/input/算額画像" + i + ".png");
 		//image = loadImage("dat/images/" + i + ".PNG");
 		image = loadImage("dat/images2/" + i + ".PNG");
+		//image = loadImage("dat/test_data/" + i + ".PNG");
 
 		// ここでリサイズすべき
 		

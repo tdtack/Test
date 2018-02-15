@@ -18,25 +18,15 @@ import Wasan.NewCanvas.ModuleComparator;
 public class Scan {
 	Hough hough;
 
-	// Point[] getPoint;// 検出した点の仮保存
-	// Line[] getLine;// 検出した線分の仮保存-
-	// Circle[] getCircle;// 検出した円の仮保存
-	// Module[] getModule;
+	ArrayList<Point> getPoint;// Point[] getPoint;// 検出した点の仮保存
+	ArrayList<Line> getLine;// Line[] getLine;// 検出した線分の仮保存
+	ArrayList<Circle> getCircle;// Circle[] getCircle;// 検出した円の仮保存
+	ArrayList<Module> getModule;// Module[] getModule;	
 
-	ArrayList<Point> getPoint;// 検出した点の仮保存
-	ArrayList<Line> getLine;// 検出した線分の仮保存-
-	ArrayList<Circle> getCircle;// 検出した円の仮保存
-	ArrayList<Module> getModule;
-
-	// Point[] relPoint = new Point[0];// あるモジュールが関連性を持つ点モジュールを格納する配列
-	// Line[] relLine = new Line[0];// あるモジュールが関連性を持つ線分モジュールを格納する配列
-	// Circle[] relCircle = new Circle[0];// あるモジュールが関連性を持つ円モジュールを格納する配列
-	// Module[] relModule = new Module[0];
-
-	ArrayList<Point> relPoint = new ArrayList<Point>();
-	ArrayList<Line> relLine = new ArrayList<Line>();
-	ArrayList<Circle> relCircle = new ArrayList<Circle>();
-	ArrayList<Module> relModule = new ArrayList<Module>();
+	ArrayList<Point> relPoint = new ArrayList<Point>();// Point[] relPoint = new Point[0];// あるモジュールが関連性を持つ点モジュールを格納する配列
+	ArrayList<Line> relLine = new ArrayList<Line>();// Line[] relLine = new Line[0];// あるモジュールが関連性を持つ線分モジュールを格納する配列
+	ArrayList<Circle> relCircle = new ArrayList<Circle>();// Circle[] relCircle = new Circle[0];// あるモジュールが関連性を持つ円モジュールを格納する配列
+	ArrayList<Module> relModule = new ArrayList<Module>();// Module[] relModule = new Module[0];
 
 	boolean input = true;// モジュール化した認識データを整理する際の条件分岐に利用
 
@@ -47,15 +37,10 @@ public class Scan {
 	Scan(Hough _hough) {
 		hough = _hough;
 
-		// getPoint = new Point[0];
-		// getLine = new Line[0];
-		// getCircle = new Circle[0];
-		// getModule = new Module[0];
-
-		getPoint = new ArrayList<Point>();
-		getLine = new ArrayList<Line>();
-		getCircle = new ArrayList<Circle>();
-		getModule = new ArrayList<Module>();
+		getPoint = new ArrayList<Point>();// getPoint = new Point[0];
+		getLine = new ArrayList<Line>();// getLine = new Line[0];
+		getCircle = new ArrayList<Circle>();// getCircle = new Circle[0];
+		getModule = new ArrayList<Module>();// getModule = new Module[0];
 	}
 
 	void scanPoint() {// 検出した線分と円から交点を総当たりで検出
@@ -65,7 +50,7 @@ public class Scan {
 		for (int i = 0; i < getLine.size(); i++) {
 			// 線分同士の交点の検出
 			for (int j = i + 1; j < getLine.size(); j++) {
-				Point p = new Point().Inter1(getLine.get(i), getLine.get(j), -1);
+				Point p = new Point().Inter1(getLine.get(i), getLine.get(j), -1);//線分同士の交点の算出
 				try {
 					if ((0 < p.x && p.x < w) && (0 < p.y && p.y < h)) {
 						// getPoint = (Point[]) append(getPoint, p);
@@ -79,7 +64,7 @@ public class Scan {
 			// 線分と円の交点の検出
 			for (int j = 0; j < getCircle.size(); j++) {
 				Point p1 = new Point().Inter2(getLine.get(i), getCircle.get(j), 1, -1);
-				Point p2 = new Point().Inter2(getLine.get(i), getCircle.get(j), 2, -1);
+				Point p2 = new Point().Inter2(getLine.get(i), getCircle.get(j), 2, -1);//線分と円の交点の算出(2つ)
 				try {
 					if ((0 < p1.x && p1.x < w) && (0 < p1.y && p1.y < h)) {
 						// getPoint = (Point[]) append(getPoint, p1);
@@ -103,10 +88,17 @@ public class Scan {
 				}
 			}
 		}
+		System.out.println("size="+getPoint.size());
 
 		// 被りがある点の排除
 		for (int i = 0; i < getPoint.size(); i++) {
-			getPoint = orgPoint(getPoint, getLine, getCircle, i, i + 1);
+			getPoint = orgPoint(getPoint, getLine, getCircle, i, i + 1);//ここに問題あり?//思ってたより消されていない点がある
+		}
+		
+		System.out.println("size="+getPoint.size());
+		
+		for(int i=0;i<getPoint.size(); i++) {
+			//System.out.println(i+" - "+getPoint.get(i).x+", "+getPoint.get(i).y);
 		}
 	}
 

@@ -57,10 +57,11 @@ public class Point extends Module {// extends Module 追加
 	}
 
 	Point Inter2(Line l1, Circle c1, int ident, int n) {// 線分と円の交点の取得
-		double radius = dist(c1.center.x, c1.center.y, c1.circum.x, c1.circum.y);
+		double radius = dist(c1.center.x, c1.center.y, c1.circum.x, c1.circum.y);//円の半径
 		double distA = dist(c1.center.x, c1.center.y, l1.start.x, l1.start.y);
-		double distB = dist(c1.center.x, c1.center.y, l1.end.x, l1.end.y);
-
+		double distB = dist(c1.center.x, c1.center.y, l1.end.x, l1.end.y);//線分の端点と中心との距離
+		
+		//本当にこれでいいか?
 		if (distA < radius) {
 			return null;
 		} else if (distB < radius) {
