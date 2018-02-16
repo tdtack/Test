@@ -18,7 +18,7 @@ public class ImagePro {
 	// BufferedImage spaceImage;
 
 	// int i = 33;// 画像番号
-	String i = "090";// 画像番号//83,46
+	String i = "046";// 画像番号//83,46
 	
 	String[] tag;// 画像に対するタグ→クラス化する？
 	// ？TagGroup tagGroup;
