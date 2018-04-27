@@ -116,24 +116,24 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// }
 
 		// データ取得確認
-		// for (int i = 0; i < detectModule.size(); i++) {
-		// Module pMod = detectModule.get(i);
-		// try {
-		// System.out.print("p[" + pMod.p.getIndex(detectPoint) + "] connects to
-		// ");
-		// for (int j = 0; j < pMod.relModule.size(); j++) {// このmoduleは点
-		// Module pMod2 = pMod.relModule.get(j);// relModuleは今のところ点に該当するものだけ
-		// try {
-		// System.out.print("p[" + pMod2.p.getIndex(detectPoint) + "],");
-		// } catch (Exception e) {
-		// //
-		// }
-		// }
-		// System.out.println();
-		// } catch (Exception e) {
-		// //
-		// }
-		// }
+		for (int i = 0; i < detectModule.size(); i++) {
+			Module pMod = detectModule.get(i);
+			try {
+				// System.out.print("p[" + pMod.p.getIndex(detectPoint) + "]
+				// connects to");
+				for (int j = 0; j < pMod.relModule.size(); j++) {// このmoduleは点
+					Module pMod2 = pMod.relModule.get(j);// relModuleは今のところ点に該当するものだけ
+					try {
+						System.out.print("p[" + pMod2.p.getIndex(detectPoint) + "],");
+					} catch (Exception e) {
+						//
+					}
+				}
+				// System.out.println();
+			} catch (Exception e) {
+				//
+			}
+		}
 		// System.out.println();
 
 		// ★★★三角形認識
@@ -175,17 +175,14 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
-		for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報
-			// tri[i].pとtri[i].lに情報は入っている
-			for (int j = 0; j < tri[i].p.length; j++) {
-				System.out.print("P[" + tri[i].p[j].getIndex(detectPoint) + "], ");
-			}
-			System.out.print("- ");
-			for (int j = 0; j < tri[i].l.length; j++) {
-				System.out.print("L[" + tri[i].l[j].getIndex(detectLine) + "], ");
-			}
-			System.out.println();
-		}
+		/*
+		 * for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報 //
+		 * tri[i].pとtri[i].lに情報は入っている for (int j = 0; j < tri[i].p.length; j++)
+		 * { System.out.print("P[" + tri[i].p[j].getIndex(detectPoint) + "], ");
+		 * } System.out.print("- "); for (int j = 0; j < tri[i].l.length; j++) {
+		 * System.out.print("L[" + tri[i].l[j].getIndex(detectLine) + "], "); }
+		 * System.out.println(); }
+		 */
 
 		// ★★★四角形認識
 		Polygon[] quad = new Polygon[0];
@@ -239,17 +236,21 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 				}
 			}
 		}
+		
+		//★★★n角形認識
 
 		for (int i = 0; i < quad.length; i++) {// ★★★円に接する三角形の点や辺の情報
-			// tri[i].pとtri[i].lに情報は入っている
+												// //tri[i].pとtri[i].lに情報は入っている
 			for (int j = 0; j < quad[i].p.length; j++) {
-				System.out.print("P[" + quad[i].p[j].getIndex(detectPoint) + "], ");
+				// System.out.print("P[" + quad[i].p[j].getIndex(detectPoint) +
+				// "], ");
 			}
-			System.out.print("- ");
+			// System.out.print("- ");
 			for (int j = 0; j < quad[i].l.length; j++) {
-				System.out.print("L[" + quad[i].l[j].getIndex(detectLine) + "], ");
+				// System.out.print("L[" + quad[i].l[j].getIndex(detectLine) +
+				// "], ");
 			}
-			System.out.println();
+			// System.out.println();
 		}
 
 		if (tri.length > 0) {
@@ -257,6 +258,10 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 
 			ArrayList<String> type = new ArrayList<String>();
 			for (int i = 0; i < tri.length; i++) {
+				for (int j = 0; j < tri[i].p.length; j++) {
+					// System.out.print("P[" + tri[i].p[j].getIndex(detectPoint)
+					// + "], ");
+				}
 				if (tri[i].checkTriangle() != "三角形") {
 					boolean check = true;
 					for (int j = 0; j < type.size(); j++) {
@@ -271,15 +276,21 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 
 			for (int i = 0; i < type.size(); i++) {
-				System.out.println(type.get(i));
+				// System.out.println(type.get(i));
 			}
 		}
+
+		// System.out.println();
 
 		if (quad.length > 0) {
 			System.out.println("四角形 × " + quad.length);
 
 			ArrayList<String> type = new ArrayList<String>();
 			for (int i = 0; i < quad.length; i++) {
+				for (int j = 0; j < quad[i].p.length; j++) {
+					// System.out.print("P[" +
+					// quad[i].p[j].getIndex(detectPoint) + "], ");
+				}
 				if (quad[i].checkQuadrangle() != "四角形") {
 					boolean check = true;
 					for (int j = 0; j < type.size(); j++) {
@@ -299,22 +310,36 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
+		System.out.println();
+
 		if (detectCircle.size() > 0) {
 			System.out.println("円 × " + detectCircle.size());
 		}
 
-		for (int i = 0; i < tri.length; i++) {// 全ての3角形
-			// System.out.println(tri.length);
-			for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
+		System.out.println();
+
+		// for (int i = 0; i < tri.length; i++) {// 全ての3角形
+		// System.out.println(tri.length);
+		for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
+			int count = 0;
+			for (int i = 0; i < tri.length; i++) {// 全ての3角形
 				if (tri[i].tangentGeo(detectCircle.get(j))) {// true
-					System.out.print("円[" + detectCircle.get(j).getIndex(detectCircle) + "]は三角形");
+					System.out.print("C[" + detectCircle.get(j).getIndex(detectCircle) + "]は三角形");
 					for (int k = 0; k < tri[i].p.length; k++) {
 						System.out.print("P[" + tri[i].p[k].getIndex(detectPoint) + "]");
 					}
+
+					count++;
+					if (count <= 1) {
+						// System.out.println("に接する");
+					} else {
+						// System.out.print("に接する");
+					}
+
 					System.out.print("に接する");
 				}
-				System.out.println();
 			}
+			System.out.println();
 		}
 		// 直線の接し方で出力させるか？
 
@@ -337,9 +362,27 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 					}
 				}
 				if (flag1) {
-					System.out.println(i + "," + j);
+					// System.out.println(i + "," + j);
 				}
 			}
+		}
+
+		// ★★★
+		// 他のタグをつけたい
+		// ①四角形に内接する円
+		// ②多角形同士の内接?
+		for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
+			int count = 0;
+			for (int i = 0; i < quad.length; i++) {// 全ての3角形
+				if (quad[i].tangentGeo(detectCircle.get(j))) {// true
+					System.out.print("C[" + detectCircle.get(j).getIndex(detectCircle) + "]は四角形");
+					for (int k = 0; k < quad[i].p.length; k++) {
+						System.out.print("P[" + quad[i].p[k].getIndex(detectPoint) + "]");
+					}
+					System.out.print("に接する");
+				}
+			}
+			System.out.println();
 		}
 
 		// ここら辺から要素同士の関連性を出力したい
@@ -516,6 +559,8 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			// e.printStackTrace();
 			System.out.println(e);
 		}
+
+		// printResult();
 
 		enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
 	}
@@ -796,6 +841,7 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		int imageHeight = imgPro.image.getHeight();
 
 		g.drawImage(imgPro.textImage, 0, 0, imageWidth, imageHeight, this);
+		// g.drawImage(null, 0, 0, imageWidth, imageHeight, this);
 		g.drawImage(imgPro.geomImage, imageWidth, 0, imageWidth, imageHeight, this);
 	}
 

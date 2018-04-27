@@ -18,8 +18,10 @@ public class ImagePro {
 	// BufferedImage spaceImage;
 
 	// int i = 33;// 画像番号
-	String i = "006";// 画像番号//83,46
-	
+	String i = "064";// 画像番号//83,46
+	//045,046,083,095
+	//☆045,046,095
+
 	String[] tag;// 画像に対するタグ→クラス化する？
 	// ？TagGroup tagGroup;
 	// 画像ごとにHashMapを持つという構想があっても良い？
@@ -29,16 +31,16 @@ public class ImagePro {
 	ImagePro() {
 		// image = loadImage("dat/input/算額画像" + i + ".png");
 		// image = loadImage("dat/input/算額画像" + i + ".png");
-		//image = loadImage("dat/images/" + i + ".PNG");
+		// image = loadImage("dat/images/" + i + ".PNG");
 		image = loadImage("dat/images2/" + i + ".PNG");
-		//image = loadImage("dat/test_data/" + i + ".PNG");
+		// image = loadImage("dat/test_data/" + i + ".PNG");
 
 		// ここでリサイズすべき
-		
+
 		// 作れ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		image = resizeImage(image);
 
-		System.out.println(image.getWidth() + ", " + image.getHeight());
+		//System.out.println(image.getWidth() + ", " + image.getHeight());
 
 		proImage = processingImage(true);
 		geomImage = processingImage(false);
@@ -50,8 +52,8 @@ public class ImagePro {
 	BufferedImage resizeImage(BufferedImage img) {
 		int width = img.getWidth();
 		int height = img.getHeight();
-		
-		int size=500;
+
+		int size = 500;
 		int resWidth, resHeight;
 		if (width >= height) {
 			resWidth = size;

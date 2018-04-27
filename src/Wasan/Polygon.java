@@ -182,7 +182,11 @@ public class Polygon extends Scan {
 				}
 			}
 		} else if (this.l.length == 4) {
-
+			for (int i = 0; i < this.l.length; i++) {
+				if (!isTangent(this.l[i], c)) {
+					return false;
+				}
+			}
 		}
 		return true;
 	}

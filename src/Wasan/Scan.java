@@ -88,14 +88,14 @@ public class Scan {
 				}
 			}
 		}
-		System.out.println("size="+getPoint.size());
+		//System.out.println("size="+getPoint.size());
 
 		// 被りがある点の排除
 		for (int i = 0; i < getPoint.size(); i++) {
 			getPoint = orgPoint(getPoint, getLine, getCircle, i, i + 1);//ここに問題あり?//思ってたより消されていない点がある
 		}
 		
-		System.out.println("size="+getPoint.size());
+		//System.out.println("size="+getPoint.size());
 		
 		for(int i=0;i<getPoint.size(); i++) {
 			//System.out.println(i+" - "+getPoint.get(i).x+", "+getPoint.get(i).y);
