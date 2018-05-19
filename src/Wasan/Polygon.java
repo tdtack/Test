@@ -151,10 +151,8 @@ public class Polygon extends Scan {
 			Scan s = new Scan();
 			if (sameLength(dist[0], dist[2]) && s.isParallel(l[1], l[3])) {
 				return "等脚台形";
-				// return "Trp-Quadrangle";
 			} else if (sameLength(dist[1], dist[3]) && s.isParallel(l[0], l[2])) {
 				return "等脚台形";
-				// return "Trp-Quadrangle";
 			}
 		}
 		return "四角形";

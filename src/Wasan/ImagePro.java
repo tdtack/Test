@@ -18,7 +18,8 @@ public class ImagePro {
 	// BufferedImage spaceImage;
 
 	// int i = 33;// 画像番号
-	String i = "064";// 画像番号//83,46
+	String i = "081";// 画像番号//83,46
+	//077,081
 	//045,046,083,095
 	//☆045,046,095
 
@@ -34,13 +35,8 @@ public class ImagePro {
 		// image = loadImage("dat/images/" + i + ".PNG");
 		image = loadImage("dat/images2/" + i + ".PNG");
 		// image = loadImage("dat/test_data/" + i + ".PNG");
-
-		// ここでリサイズすべき
-
-		// 作れ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		image = resizeImage(image);
-
-		//System.out.println(image.getWidth() + ", " + image.getHeight());
+		
+		image = resizeImage(image);//画像のリサイズ
 
 		proImage = processingImage(true);
 		geomImage = processingImage(false);

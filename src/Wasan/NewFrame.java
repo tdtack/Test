@@ -5,7 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 
 public class NewFrame extends Frame{
-	Button b1;
+	//Button b1;
 	NewFrame(){
 		setTitle("WasanImageRecognition");
 		//setSize(30, 200);

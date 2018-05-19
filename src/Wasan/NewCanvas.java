@@ -43,33 +43,27 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		scan = new Scan(hough);
 
 		// 円に関する投票、検出、幾何要素の除去(文字との分類のため)
-		hough.voteFieldCircle(imgPro.textImage);
-		scan.scanCircle();
-		imgPro.removeCircle(scan.getCircle);
+		hough.voteFieldCircle(imgPro.textImage);// 円に関する投票
+		scan.scanCircle();// 円の検出
+		imgPro.removeCircle(scan.getCircle);// 円の除去
 
-		// 直線に関する投票、検出、幾何要素の除去(文字との分類のため)
-		hough.voteFieldLine(imgPro.textImage);
-		scan.scanLine();
-		imgPro.removeLine(scan.getLine);
-
-		// ★★★ここから
+		// 線分に関する投票、検出、幾何要素の除去(文字との分類のため)
+		hough.voteFieldLine(imgPro.textImage);// 線分に関する投票
+		scan.scanLine();// 線分の検出
+		imgPro.removeLine(scan.getLine);// 線分の除去
 
 		// 点の検出、幾何要素の除去(文字との分類のため)
-		scan.scanPoint();
-		imgPro.removePoint(scan.getPoint);
+		scan.scanPoint();// 点の検出
+		imgPro.removePoint(scan.getPoint);// 点の除去
 
-		// ★Module定義(degree算出に近い?)
+		// Module定義(degree算出に近い?)
 		// ここで端点などの補正処理を行う?
-		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);// RelatedTotalが算出
-		// ★★★ここまででデータの不具合があると思われる
+		scan.scanModule(scan.getPoint, scan.getLine, scan.getCircle);// 点や線分、円のModule化、関連性の定義
 
 		// 幾何要素と文字の分類
-		imgPro.removeText();
+		imgPro.removeText();// 残された文字の検出
 
 		// printResult(scan);// 幾何要素の関連性を一旦表示する
-
-		// ここで三角形とか四角形の図形認識できる？
-		// 三角形、四角形と区分けして考える？
 
 		// ArrayListへの追加
 		detectPoint = new ArrayList<Point>();
@@ -88,7 +82,6 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			detectModule.add(scan.getModule.get(i));// scan.getModule[i]
 		}
 
-		// ★★★//任意の1点に対してPoint[]型でreturnしたい
 		// ここで取得できた点同士の関連は「線で繋がっている」ということが重要→Point型での管理がしたい？
 		// 取り敢えず、点と点の関連付けは以下
 
@@ -115,32 +108,60 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// }
 		// }
 
-		// データ取得確認
+		// データ取得確認(現在はrelModuleを定義していないので表示されず)
+		// for (int i = 0; i < detectModule.size(); i++) {
+		// Module pMod = detectModule.get(i);
+		// try {
+		// for (int j = 0; j < pMod.relModule.size(); j++) {// このmoduleは点
+		// Module pMod2 = pMod.relModule.get(j);// relModuleは今のところ点に該当するものだけ
+		// try {
+		// System.out.print("p[" + pMod2.p.getIndex(detectPoint) + "],");
+		// } catch (Exception e) {
+		// //
+		// }
+		// }
+		// } catch (Exception e) {
+		// //
+		// }
+		// }
+
+		// 点同士の関連性を確認
 		for (int i = 0; i < detectModule.size(); i++) {
-			Module pMod = detectModule.get(i);
-			try {
-				// System.out.print("p[" + pMod.p.getIndex(detectPoint) + "]
-				// connects to");
-				for (int j = 0; j < pMod.relModule.size(); j++) {// このmoduleは点
-					Module pMod2 = pMod.relModule.get(j);// relModuleは今のところ点に該当するものだけ
-					try {
-						System.out.print("p[" + pMod2.p.getIndex(detectPoint) + "],");
-					} catch (Exception e) {
-						//
-					}
+			if (detectModule.get(i).p != null) {
+				// detectModule.get(i).pに該当するModuleのrelPointが知りたい
+				System.out.print("p[" + detectModule.get(i).p.getIndex(detectPoint) + "]　→ ");
+				for (int j = 0; j < detectModule.get(i).relPoint.size(); j++) {
+					System.out.print("p[" + detectModule.get(i).relPoint.get(j).getIndex(detectPoint) + "],");
 				}
-				// System.out.println();
-			} catch (Exception e) {
-				//
+				System.out.println();
 			}
 		}
-		// System.out.println();
+		System.out.println();
+
+		// 3角形認識
+		// 認識した点の任意の3個を選択する関数
+		// その中に関連する点から任意の2個を選択する関数
+		// Point型 or Module型で作成したい
+
+		// n角形認識
+		// 2通りの考え方
+		// ①点の個数だけループを回し、任意のn個の組み合わせからn角形を構成できるか判定(確実性はある?)
+		// ②点同士の関連性を絞り(単純計算では半分の組み合わせ量)、グラフ的にたどっていく(効率的である?)
+
+		// Point[][] pComb = new Point[10][10];
+		for (int i = 0; i < detectPoint.size(); i++) {
+			// 3～detectPoint.size()通りの選び方
+			// 三角形,四角形,五角形
+			for (int k = 3; k < detectPoint.size(); k++) {
+				// new Point[0][k]
+			}
+		}
 
 		// ★★★三角形認識
 		Polygon[] tri = new Polygon[0];
 		for (int i = 0; i < detectModule.size(); i++) {
 			Module m = detectModule.get(i);
-			try {// if (m.p != null)
+			try {
 				Point[] v = getVertex(m);// mに繋がっている点のモジュールのList
 				for (int j = 0; j < v.length; j++) {
 					for (int k = j + 1; k < v.length; k++) {
@@ -174,15 +195,6 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 				//
 			}
 		}
-
-		/*
-		 * for (int i = 0; i < tri.length; i++) {// ★★★円に接する三角形の点や辺の情報 //
-		 * tri[i].pとtri[i].lに情報は入っている for (int j = 0; j < tri[i].p.length; j++)
-		 * { System.out.print("P[" + tri[i].p[j].getIndex(detectPoint) + "], ");
-		 * } System.out.print("- "); for (int j = 0; j < tri[i].l.length; j++) {
-		 * System.out.print("L[" + tri[i].l[j].getIndex(detectLine) + "], "); }
-		 * System.out.println(); }
-		 */
 
 		// ★★★四角形認識
 		Polygon[] quad = new Polygon[0];
@@ -236,9 +248,8 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 				}
 			}
 		}
-		
-		//★★★n角形認識
 
+		// ★★★n角形認識
 		for (int i = 0; i < quad.length; i++) {// ★★★円に接する三角形の点や辺の情報
 												// //tri[i].pとtri[i].lに情報は入っている
 			for (int j = 0; j < quad[i].p.length; j++) {
@@ -280,8 +291,6 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
-		// System.out.println();
-
 		if (quad.length > 0) {
 			System.out.println("四角形 × " + quad.length);
 
@@ -310,8 +319,6 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
-		System.out.println();
-
 		if (detectCircle.size() > 0) {
 			System.out.println("円 × " + detectCircle.size());
 		}
@@ -321,19 +328,12 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		// for (int i = 0; i < tri.length; i++) {// 全ての3角形
 		// System.out.println(tri.length);
 		for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
-			int count = 0;
+			// int count = 0;
 			for (int i = 0; i < tri.length; i++) {// 全ての3角形
 				if (tri[i].tangentGeo(detectCircle.get(j))) {// true
-					System.out.print("C[" + detectCircle.get(j).getIndex(detectCircle) + "]は三角形");
+					System.out.print("円C[" + detectCircle.get(j).getIndex(detectCircle) + "]は三角形");
 					for (int k = 0; k < tri[i].p.length; k++) {
 						System.out.print("P[" + tri[i].p[k].getIndex(detectPoint) + "]");
-					}
-
-					count++;
-					if (count <= 1) {
-						// System.out.println("に接する");
-					} else {
-						// System.out.print("に接する");
 					}
 
 					System.out.print("に接する");
@@ -367,23 +367,60 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 
+		// 内部に存在①
+		for (int i = 0; i < quad.length; i++) {//
+			for (int j = 0; j < tri.length; j++) {//
+				Point[] p = new Point[0];
+				for (int k = 0; k < quad[i].p.length; k++) {//
+					boolean flag = false;
+					for (int l = 0; l < tri[j].l.length; l++) {//
+						if (scan.isNeighbor(quad[i].p[k], tri[j].l[l])) {
+							flag = true;// 1個でも引っかかったらフラグを立てる
+						}
+					}
+					if (flag) {
+						p = scan.append(p, quad[i].p[k]);
+					}
+				}
+				if (p.length == 4) {
+					System.out.print("四角形");
+					for (int k = 0; k < p.length; k++) {
+						System.out.print("P[" + p[k].getIndex(detectPoint) + "]");
+					}
+					System.out.print("は三角形");
+					for (int k = 0; k < tri[j].p.length; k++) {
+						System.out.print("P[" + tri[j].p[k].getIndex(detectPoint) + "]");
+					}
+					System.out.println("に内接する");
+				}
+			}
+		}
+
+		// for (int i = 0; i < quad.length; i++) {
+		// for (int k = 0; k < quad[i].p.length; k++) {
+		// System.out.print("P[" + quad[i].p[k].getIndex(detectPoint) + "]");
+		// }
+		// System.out.println();
+		// }
+
 		// ★★★
 		// 他のタグをつけたい
 		// ①四角形に内接する円
 		// ②多角形同士の内接?
-		for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
-			int count = 0;
-			for (int i = 0; i < quad.length; i++) {// 全ての3角形
-				if (quad[i].tangentGeo(detectCircle.get(j))) {// true
-					System.out.print("C[" + detectCircle.get(j).getIndex(detectCircle) + "]は四角形");
-					for (int k = 0; k < quad[i].p.length; k++) {
-						System.out.print("P[" + quad[i].p[k].getIndex(detectPoint) + "]");
-					}
-					System.out.print("に接する");
-				}
-			}
-			System.out.println();
-		}
+		// for (int j = 0; j < detectCircle.size(); j++) {// 全ての円
+		// int count = 0;
+		// for (int i = 0; i < quad.length; i++) {// 全ての3角形
+		// if (quad[i].tangentGeo(detectCircle.get(j))) {// true
+		// System.out.print("C[" + detectCircle.get(j).getIndex(detectCircle) +
+		// "]は四角形");
+		// for (int k = 0; k < quad[i].p.length; k++) {
+		// System.out.print("P[" + quad[i].p[k].getIndex(detectPoint) + "]");
+		// }
+		// System.out.print("に接する");
+		// }
+		// }
+		// System.out.println();
+		// }
 
 		// ここら辺から要素同士の関連性を出力したい
 
@@ -578,6 +615,18 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 	}
+	
+	//認識した点の任意の3個を選択する関数
+	//その中に関連する点から任意の2個を選択する関数
+	
+	Module[] combModule() {//認識した点の任意の3個を選択する関数//配列で返すべき
+		return null;
+	}
+
+	Point[] combPoint() {//その中に関連する点から任意の2個を選択する関数//配列で返すべき
+		//引数 : Point[] list,int select
+		return null;
+	}
 
 	boolean collinear(Polygon[] poly, Point... p) {// 3点以上が同一直線状にあるかどうかを判定
 		// relPointとpの内、大きい方をn、小さい方をmとすると、nCm通り？
@@ -647,15 +696,8 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		return false;
 	}
 
-	Point[] getVertex(Module m) {// 関連性のある点のModuleのリストを返す
-		// Module[] mList = new Module[0];
-		// for (int i = 0; i < m.relModule.size(); i++) {
-		// mList = (Module[]) append(mList, m.relModule.get(i));
-		// }
-		// return mList;
-
+	Point[] getVertex(Module m) {
 		Point[] pList = new Point[0];
-		// System.out.println(m.relPoint.size());
 		for (int i = 0; i < m.relPoint.size(); i++) {
 			pList = (Point[]) append(pList, m.relPoint.get(i));
 		}

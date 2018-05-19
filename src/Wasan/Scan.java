@@ -21,12 +21,20 @@ public class Scan {
 	ArrayList<Point> getPoint;// Point[] getPoint;// 検出した点の仮保存
 	ArrayList<Line> getLine;// Line[] getLine;// 検出した線分の仮保存
 	ArrayList<Circle> getCircle;// Circle[] getCircle;// 検出した円の仮保存
-	ArrayList<Module> getModule;// Module[] getModule;	
+	ArrayList<Module> getModule;// Module[] getModule;
 
-	ArrayList<Point> relPoint = new ArrayList<Point>();// Point[] relPoint = new Point[0];// あるモジュールが関連性を持つ点モジュールを格納する配列
-	ArrayList<Line> relLine = new ArrayList<Line>();// Line[] relLine = new Line[0];// あるモジュールが関連性を持つ線分モジュールを格納する配列
-	ArrayList<Circle> relCircle = new ArrayList<Circle>();// Circle[] relCircle = new Circle[0];// あるモジュールが関連性を持つ円モジュールを格納する配列
-	ArrayList<Module> relModule = new ArrayList<Module>();// Module[] relModule = new Module[0];
+	ArrayList<Point> relPoint = new ArrayList<Point>();// Point[] relPoint = new
+														// Point[0];//
+														// あるモジュールが関連性を持つ点モジュールを格納する配列
+	ArrayList<Line> relLine = new ArrayList<Line>();// Line[] relLine = new
+													// Line[0];//
+													// あるモジュールが関連性を持つ線分モジュールを格納する配列
+	ArrayList<Circle> relCircle = new ArrayList<Circle>();// Circle[] relCircle
+															// = new
+															// Circle[0];//
+															// あるモジュールが関連性を持つ円モジュールを格納する配列
+	ArrayList<Module> relModule = new ArrayList<Module>();// Module[] relModule
+															// = new Module[0];
 
 	boolean input = true;// モジュール化した認識データを整理する際の条件分岐に利用
 
@@ -50,7 +58,7 @@ public class Scan {
 		for (int i = 0; i < getLine.size(); i++) {
 			// 線分同士の交点の検出
 			for (int j = i + 1; j < getLine.size(); j++) {
-				Point p = new Point().Inter1(getLine.get(i), getLine.get(j), -1);//線分同士の交点の算出
+				Point p = new Point().Inter1(getLine.get(i), getLine.get(j), -1);// 線分同士の交点の算出
 				try {
 					if ((0 < p.x && p.x < w) && (0 < p.y && p.y < h)) {
 						// getPoint = (Point[]) append(getPoint, p);
@@ -64,7 +72,7 @@ public class Scan {
 			// 線分と円の交点の検出
 			for (int j = 0; j < getCircle.size(); j++) {
 				Point p1 = new Point().Inter2(getLine.get(i), getCircle.get(j), 1, -1);
-				Point p2 = new Point().Inter2(getLine.get(i), getCircle.get(j), 2, -1);//線分と円の交点の算出(2つ)
+				Point p2 = new Point().Inter2(getLine.get(i), getCircle.get(j), 2, -1);// 線分と円の交点の算出(2つ)
 				try {
 					if ((0 < p1.x && p1.x < w) && (0 < p1.y && p1.y < h)) {
 						// getPoint = (Point[]) append(getPoint, p1);
@@ -88,17 +96,18 @@ public class Scan {
 				}
 			}
 		}
-		//System.out.println("size="+getPoint.size());
+		// System.out.println("size="+getPoint.size());
 
 		// 被りがある点の排除
 		for (int i = 0; i < getPoint.size(); i++) {
-			getPoint = orgPoint(getPoint, getLine, getCircle, i, i + 1);//ここに問題あり?//思ってたより消されていない点がある
+			getPoint = orgPoint(getPoint, getLine, getCircle, i, i + 1);// ここに問題あり?//思ってたより消されていない点がある
 		}
-		
-		//System.out.println("size="+getPoint.size());
-		
-		for(int i=0;i<getPoint.size(); i++) {
-			//System.out.println(i+" - "+getPoint.get(i).x+", "+getPoint.get(i).y);
+
+		// System.out.println("size="+getPoint.size());
+
+		for (int i = 0; i < getPoint.size(); i++) {
+			// System.out.println(i+" - "+getPoint.get(i).x+",
+			// "+getPoint.get(i).y);
 		}
 	}
 
@@ -596,15 +605,15 @@ public class Scan {
 		// }
 		// }
 
-		// ★★★問題
-		// mArray→点5線6円1(0,1,2,3,4)(5,6,7,8,9,10)(11)
+		// 点同士の関連性を算出★★★
+		// 改良したい?
 		for (int i = 0; i < mArray.size(); i++) {
 			if (mArray.get(i).p != null) {
 				for (int j = 0; j < mArray.get(i).relLine.size(); j++) {
 					for (int k = 0; k < mArray.size(); k++) {// (mArray.size() -
 																// cArray.size())
 						if (mArray.get(k).l != null) {
-							if (mArray.get(i).relLine.get(j) == mArray.get(k).l) {
+							if (mArray.get(i).relLine.get(j) == mArray.get(k).l) {//関連する線分を取得
 								for (int l = 0; l < mArray.get(k).relPoint.size(); l++) {
 									if (mArray.get(i).p != mArray.get(k).relPoint.get(l)) {
 										// mArray.get(i).relPoint.add(mArray.get(k).relPoint.get(l));
@@ -758,11 +767,11 @@ public class Scan {
 		}
 		return false;
 	}
-	
+
 	boolean isNeighbor(Point p, Line l) {// 点が線分上にあるかどうかの判定
 		if (l.start == p || l.end == p) {
-			//return false;
-			//今後は端点の考慮も必要
+			// return false;
+			// 今後は端点の考慮も必要
 		}
 
 		double dotA = (l.start.x - l.end.x) * (l.start.x - p.x) + (l.start.y - l.end.y) * (l.start.y - p.y);

@@ -17,6 +17,19 @@ public class WasanMain extends Applet {// extends Applet
 		// frame.setSize(canvasWidth * 2, canvasHeight);
 		frame.setSize(canvasWidth * 2, canvasHeight);
 		frame.setVisible(true);
+		
+		//★★★
+		//複数ウィンドウは可能なのか
+		//NewFrame[] frames = new NewFrame[20];// フレーム作成
+		//NewCanvas[] canvases = new NewCanvas[20];// キャンバス作成
+
+		frame.add(canvas);// フレームにキャンバス追加
+		frame.addWindowListener(new NewAdapter());// アダプタ追加
+		// frame.setUndecorated(true);
+		
+		// frame.setSize(canvasWidth * 2, canvasHeight);
+		frame.setSize(canvasWidth * 2, canvasHeight);
+		frame.setVisible(true);
 
 		System.out.println();
 		System.out.println("complete");
