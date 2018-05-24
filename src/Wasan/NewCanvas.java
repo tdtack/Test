@@ -250,6 +250,12 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 		}
 
 		// ★★★n角形認識
+		// Polygon[][] poly = new Polygon[detectPoint.size() + 1][0];
+		Polygon[][] poly = new Polygon[0][0];
+		// ①
+		// ②
+		// ③
+
 		for (int i = 0; i < quad.length; i++) {// ★★★円に接する三角形の点や辺の情報
 												// //tri[i].pとtri[i].lに情報は入っている
 			for (int j = 0; j < quad[i].p.length; j++) {
@@ -615,17 +621,45 @@ public class NewCanvas extends Canvas implements MouseListener, MouseMotionListe
 			}
 		}
 	}
-	
-	//認識した点の任意の3個を選択する関数
-	//その中に関連する点から任意の2個を選択する関数
-	
-	Module[] combModule() {//認識した点の任意の3個を選択する関数//配列で返すべき
+
+	// 認識した点の任意の3個を選択する関数
+	// その中に関連する点から任意の2個を選択する関数
+
+	// ★★★
+	Module[] combModule() {// 認識した点の任意の3個を選択する関数//配列で返すべき
 		return null;
 	}
 
-	Point[] combPoint() {//その中に関連する点から任意の2個を選択する関数//配列で返すべき
-		//引数 : Point[] list,int select
-		return null;
+	Point[][] combPoint(int n, int r) {// その中に関連する点から任意の2個を選択する関数//配列で返すべき
+		int combination = (n >= r && r >= 1) ? factorial(n) / (factorial(n - r) * factorial(r)) : 0;
+		Point[][] list = new Point[combination][r];// new Point[nCr][r]
+
+		// ここで一度列挙?
+
+		for (int i = 0; i < list.length; i++) {
+			for (int j = 0; j < list[i].length; j++) {
+				// list[i][j]=detectPoint.get((i,jに依存する数式))
+			}
+		}
+		return list;
+	}
+	// 二重配列か?まずは作ってみよう
+	// Ex.5個から3つを取り出す
+	// (1,2,3),(1,2,4),(1,2,5),(1,3,4),(1,3,5)
+	// (1,4,5),(2,3,4),(2,3,5),(2,4,5),(3,4,5)
+	// ([0][0],[0][1],[0][2]),([1][0],[1][1],[1][2]),([2][0],[2][1],[2][2]),([3][0],[3][1],[3][2]),([4][0],[4][1],[4][2])
+	// ([5][0],[5][1],[5][2]),([6][0],[6][1],[6][2]),([7][0],[7][1],[7][2]),([8][0],[8][1],[8][2]),([9][0],[9][1],[9][2])
+	// これらを1つのリストにしてreturnしたい
+
+	int factorial(int num) {// 階乗
+		if (num <= 1) {
+			return num;
+		}
+		return num * factorial(num - 1);
+	}
+
+	boolean isPolygon() {
+		return true;
 	}
 
 	boolean collinear(Polygon[] poly, Point... p) {// 3点以上が同一直線状にあるかどうかを判定
